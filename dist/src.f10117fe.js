@@ -1953,7 +1953,11 @@ function () {
   };
 
   User.prototype.fetch = function () {
-    axios_1.default.get("http://localhost:3000/users/" + this.get('id')).then(function (res) {});
+    var _this = this;
+
+    axios_1.default.get("http://localhost:3000/users/" + this.get('id')).then(function (res) {
+      _this.set(res.data);
+    });
   };
 
   return User;
