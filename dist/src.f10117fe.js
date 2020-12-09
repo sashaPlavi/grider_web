@@ -1960,6 +1960,16 @@ function () {
     });
   };
 
+  User.prototype.save = function () {
+    var id = this.get('id');
+
+    if (id) {
+      axios_1.default.put("http://localhost:3000/users/" + id, this.data);
+    } else {
+      axios_1.default.post('http://localhost:3000/users', this.data);
+    }
+  };
+
   return User;
 }();
 
@@ -1974,9 +1984,10 @@ Object.defineProperty(exports, "__esModule", {
 var User_1 = require("./models/User");
 
 var user = new User_1.User({
-  id: 2
+  name: 'perica',
+  age: 44
 });
-user.fetch(); // user.on('change', () => {
+user.save(); // user.on('change', () => {
 //   console.log('change1');
 // });
 // user.on('change', () => {
