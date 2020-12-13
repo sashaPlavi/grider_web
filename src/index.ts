@@ -1,21 +1,17 @@
-import { User } from './models/User';
+import { User, UserProps } from './models/User';
 
-const user = User.builUser({ id: 2 });
+import { Collections } from './models/Collections';
 
-//console.log(user.attributes.get('name'));
+// axios.get('http://localhost:3000/users').then((res: AxiosResponse) => {
+//   console.log(res.data);
+// });
+const collections = new Collections<User, UserProps>(
+  'http://localhost:3000/users',
+  (json: UserProps) => User.builUser(json)
+);
 
-user.on('change', () => {
-  console.log(user);
+collections.on('change', () => {
+  console.log(collections);
 });
-user.fetch();
-// user.on('change', () => {
-//   console.log('change2');
-// });
-// user.on('click', () => {
-//   console.log('click');
-// });
-// user.on('hover', () => {
-//   console.log('hover');
-// });
 
-// user.trigger('dasdasda');
+collections.fetch();
