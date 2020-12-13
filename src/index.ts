@@ -1,10 +1,13 @@
 import { User } from './models/User';
 
+const user = User.builUser({ id: 2 });
+
 //console.log(user.attributes.get('name'));
 
-// user.on('change', () => {
-//   console.log('change1');
-// });
+user.on('change', () => {
+  console.log(user);
+});
+user.fetch();
 // user.on('change', () => {
 //   console.log('change2');
 // });
