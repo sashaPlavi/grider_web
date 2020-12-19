@@ -131,8 +131,19 @@ function () {
   function View(parent, model) {
     this.parent = parent;
     this.model = model;
+    this.regions = {};
     this.bindModel();
-  }
+  } // default eventsMap implementation
+
+
+  View.prototype.eventsMap = function () {
+    return {};
+  }; // default regionsmap implememtation
+
+
+  View.prototype.regionsMap = function () {
+    return {};
+  };
 
   View.prototype.bindModel = function () {
     var _this = this;
@@ -160,11 +171,28 @@ function () {
     }
   };
 
+  View.prototype.mapRegions = function (fragment) {
+    var regionsMap = this.regionsMap();
+
+    for (var key in regionsMap) {
+      var selector = regionsMap[key];
+      var element = fragment.querySelector(selector);
+
+      if (element) {
+        this.regions[key] = element;
+      }
+    }
+  };
+
+  View.prototype.onRender = function () {};
+
   View.prototype.render = function () {
     this.parent.innerHTML = '';
     var templateElement = document.createElement('template');
     templateElement.innerHTML = this.template();
     this.bindEvents(templateElement.content);
+    this.mapRegions(templateElement.content);
+    this.onRender();
     this.parent.append(templateElement.content);
   };
 
@@ -255,7 +283,129 @@ function (_super) {
 }(View_1.View);
 
 exports.UserForm = UserForm;
-},{"./View":"src/view/View.ts"}],"src/models/Model.ts":[function(require,module,exports) {
+},{"./View":"src/view/View.ts"}],"src/view/UserShow.ts":[function(require,module,exports) {
+"use strict";
+
+var __extends = this && this.__extends || function () {
+  var _extendStatics = function extendStatics(d, b) {
+    _extendStatics = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (d, b) {
+      d.__proto__ = b;
+    } || function (d, b) {
+      for (var p in b) {
+        if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
+      }
+    };
+
+    return _extendStatics(d, b);
+  };
+
+  return function (d, b) {
+    _extendStatics(d, b);
+
+    function __() {
+      this.constructor = d;
+    }
+
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+}();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UserShow = void 0;
+
+var View_1 = require("./View");
+
+var UserShow =
+/** @class */
+function (_super) {
+  __extends(UserShow, _super);
+
+  function UserShow() {
+    return _super !== null && _super.apply(this, arguments) || this;
+  }
+
+  UserShow.prototype.template = function () {
+    return "\n    <div>\n    <h1>User Detail</h1>\n    <div>user Name: " + this.model.get('name') + " </div>\n    <div>user age: " + this.model.get('age') + " </div>\n    \n    </div>\n    ";
+  };
+
+  return UserShow;
+}(View_1.View);
+
+exports.UserShow = UserShow;
+},{"./View":"src/view/View.ts"}],"src/view/UserEdit.ts":[function(require,module,exports) {
+"use strict";
+
+var __extends = this && this.__extends || function () {
+  var _extendStatics = function extendStatics(d, b) {
+    _extendStatics = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (d, b) {
+      d.__proto__ = b;
+    } || function (d, b) {
+      for (var p in b) {
+        if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
+      }
+    };
+
+    return _extendStatics(d, b);
+  };
+
+  return function (d, b) {
+    _extendStatics(d, b);
+
+    function __() {
+      this.constructor = d;
+    }
+
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+}();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UserEdit = void 0;
+
+var View_1 = require("./View");
+
+var UserForm_1 = require("./UserForm");
+
+var UserShow_1 = require("./UserShow");
+
+var UserEdit =
+/** @class */
+function (_super) {
+  __extends(UserEdit, _super);
+
+  function UserEdit() {
+    return _super !== null && _super.apply(this, arguments) || this;
+  }
+
+  UserEdit.prototype.regionsMap = function () {
+    return {
+      userShow: '.user-show',
+      userForm: '.user-form'
+    };
+  };
+
+  UserEdit.prototype.onRender = function () {
+    new UserShow_1.UserShow(this.regions.userShow, this.model).render();
+    new UserForm_1.UserForm(this.regions.userForm, this.model).render();
+  };
+
+  UserEdit.prototype.template = function () {
+    return "\n    <div>\n    <div class=\"user-show\"></div>\n    <div class=\"user-form\"></div>\n     </div>\n    \n    ";
+  };
+
+  return UserEdit;
+}(View_1.View);
+
+exports.UserEdit = UserEdit;
+},{"./View":"src/view/View.ts","./UserForm":"src/view/UserForm.ts","./UserShow":"src/view/UserShow.ts"}],"src/models/Model.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2346,7 +2496,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var UserForm_1 = require("./view/UserForm");
+var UserEdit_1 = require("./view/UserEdit");
 
 var User_1 = require("./models/User");
 
@@ -2357,12 +2507,13 @@ var user = User_1.User.builUser({
 var root = document.getElementById('root');
 
 if (root) {
-  var userForm = new UserForm_1.UserForm(root, user);
-  userForm.render();
+  var userEdit = new UserEdit_1.UserEdit(root, user);
+  userEdit.render();
+  console.log(userEdit);
 } else {
   throw new Error('root element not found');
 }
-},{"./view/UserForm":"src/view/UserForm.ts","./models/User":"src/models/User.ts"}],"../../../../AppData/Roaming/nvm/v10.17.0/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./view/UserEdit":"src/view/UserEdit.ts","./models/User":"src/models/User.ts"}],"../../../../AppData/Roaming/nvm/v10.17.0/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2390,7 +2541,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55117" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51178" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
